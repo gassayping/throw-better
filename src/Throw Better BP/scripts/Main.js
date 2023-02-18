@@ -1,6 +1,18 @@
 import { world, system, Vector, Location } from '@minecraft/server';
 import { throwables } from "throwables.js";
 
+for (const item in throwables) {
+	const ammo = throwables[item].ammo;
+	if (!ammo) continue;
+	const scoreboard = ammo.scoreboard;
+	if (!scoreboard) continue;
+	try {
+		world.scoreboard.addObjective(scoreboard.name, scoreboard.name);
+	} catch { }
+	scoreboard.id = world.scoreboard.getObjective(scoreboard.name);
+	console.warn(scoreboard.id);
+}
+
 let playersThrowing = new Map();
 
 world.events.itemStartCharge.subscribe(eventData => {
@@ -35,18 +47,13 @@ function fire(player, item, scheduleId) {
 	if (ammoObj.item) {
 		player.runCommandAsync(`clear @s ${item} 0 ${ammoObj.consume}`);
 	} else if (ammoObj.scoreboard) {
-		try {
-			ammoObj.scoreboard.id = world.scoreboard.addObjective(ammoObj.scoreboard.name, ammoObj.scoreboard.name);
-			ammoObj.scoreboard.id.setScore(player, ammoObj.scoreboard.max);
-		} catch {
-			ammoObj.scoreboard.id = world.scoreboard.getObjective(ammoObj.scoreboard.name);
-			ammoObj.scoreboard.id.setScore(player.scoreboard, ammoObj.scoreboard.max);
-		}
+		ammoObj.scoreboard.id = world.scoreboard.getObjective(ammoObj.scoreboard.name);
+		ammoObj.scoreboard.id.setScore(player.scoreboard, ammoObj.scoreboard.max);
 		const ammo = player.scoreboard.getScore(ammoObj.scoreboard.id) - 1;
 		if (ammo <= 0) {
 			player.getComponent("minecraft:inventory").container.getSlot(player.currentSlot).clearItem();
 		} else {
-			player.scoreboard.setScore(ammoObj.scoreboard.id, ammo)
+			ammoObj.scoreboard.id.setScore(player.scoreboard, ammo);
 		}
 	}
 }
