@@ -1,0 +1,12 @@
+{
+	"resource_pack_name": "Script Test",
+	"texture_name": "atlas.items",
+	"texture_data": {
+		"blow_gun": {
+			"textures": "textures/items/blow_gun"
+		},
+		"rock": {
+			"textures": "textures/items/rock"
+		}
+	}
+}

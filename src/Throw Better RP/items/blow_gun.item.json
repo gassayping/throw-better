@@ -1,0 +1,15 @@
+{
+	"format_version": "1.10",
+	"minecraft:item": {
+		"description": {
+			"identifier": "example:blow_gun",
+			"category": "Nature"
+		},
+		"components": {
+			"minecraft:icon": "blow_gun",
+			"minecraft:use_animation": "bow",
+			"minecraft:hover_text_color": "aqua",
+			"minecraft:render_offsets": "apple"
+		}
+	}
+}

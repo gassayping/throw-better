@@ -1,0 +1,14 @@
+{
+	"format_version": "1.10",
+	"minecraft:item": {
+		"description": {
+			"identifier": "example:rock",
+			"category": "Nature"
+		},
+		"components": {
+			"minecraft:icon": "rock",
+			"minecraft:use_animation": "bow",
+			"minecraft:render_offsets": "apple"
+		}
+	}
+}

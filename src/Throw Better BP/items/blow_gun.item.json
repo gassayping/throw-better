@@ -1,0 +1,22 @@
+{
+	"format_version": "1.16.0",
+	"minecraft:item": {
+		"description": {
+			"identifier": "example:blow_gun"
+		},
+		"components": {
+			"minecraft:max_stack_size": 1,
+			"minecraft:use_duration": 12000,
+			"minecraft:food": {
+				"can_always_eat": true
+			},
+			"minecraft:durability": {
+				"max_durability": 100,
+				"damage_chance": {
+					"max": 100,
+					"min": 100
+				}
+			}
+		}
+	}
+}

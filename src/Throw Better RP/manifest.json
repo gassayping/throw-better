@@ -1,0 +1,45 @@
+{
+	"format_version": 2,
+	"metadata": {
+		"authors": [
+			"Gassayping"
+		],
+		"url": "https://github.com/gassayping/throw-better"
+	},
+	"header": {
+		"name": "Throw Better",
+		"description": "A script pack to create custom throwable items WITHOUT using player.json!",
+		"min_engine_version": [
+			1,
+			19,
+			50
+		],
+		"uuid": "c6b0bb1e-6d9d-4700-80b1-33df1ed55ee5",
+		"version": [
+			1,
+			0,
+			3
+		]
+	},
+	"modules": [
+		{
+			"type": "resources",
+			"uuid": "7be05b20-b905-4758-9d47-4513fc30e3da",
+			"version": [
+				1,
+				0,
+				0
+			]
+		}
+	],
+	"dependencies": [
+		{
+			"uuid": "1c639982-a260-465b-86b6-0879bcb8caab",
+			"version": [
+				1,
+				0,
+				0
+			]
+		}
+	]
+}
