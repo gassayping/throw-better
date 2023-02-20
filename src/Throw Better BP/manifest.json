@@ -4,7 +4,7 @@
 		"authors": [
 			"Gassayping"
 		],
-		"url": "https://github.com/gassayping/throw-better"
+		"url": "github.com/gassayping/throw-better"
 	},
 	"header": {
 		"name": "Throw Better",
@@ -18,7 +18,7 @@
 		"version": [
 			1,
 			0,
-			3
+			0
 		]
 	},
 	"modules": [
@@ -44,14 +44,6 @@
 		}
 	],
 	"dependencies": [
-		{
-			"uuid": "c6b0bb1e-6d9d-4700-80b1-33df1ed55ee5",
-			"version": [
-				1,
-				0,
-				0
-			]
-		},
 		{
 			"module_name": "@minecraft/server",
 			"version": "1.1.0-beta"
