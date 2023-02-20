@@ -1,9 +1,11 @@
-import { world, system, Vector, Location, ItemStack, ItemTypes} from '@minecraft/server';
+import { world, system, Vector, Location, ItemStack, ItemTypes } from '@minecraft/server';
 import { throwables } from "throwables.js";
 
 for (const item in throwables) {
+	if (!throwables.hasOwnProperty(item)) continue;
 	const ammo = throwables[item].ammo;
 	if (!ammo) continue;
+	ammo.consume ??= 1;
 	const scoreboard = ammo.scoreboard;
 	if (!scoreboard) continue;
 	try {
@@ -12,13 +14,13 @@ for (const item in throwables) {
 	scoreboard.id = world.scoreboard.getObjective(scoreboard.name);
 }
 
-let playersThrowing = new Map();
-let lastShot = new Map();
+const playersThrowing = new Map();
+const lastShot = new Map();
 
-world.events.itemStartCharge.subscribe(eventData => {
+world.events.itemStartCharge.subscribe((eventData) => {
 	const item = eventData.itemStack.typeId;
 	if (!throwables[item]) return;
-	if (system.currentTick-lastShot.get(`${eventData.source.id}${item}`) < throwables[item].fireRate) return;
+	if (system.currentTick - lastShot.get(`${eventData.source.id}${item}`) < throwables[item].fireRate) return;
 	const player = eventData.source;
 	const throwLoop = system.runSchedule(() => {
 		if (!playersThrowing.has(player.id)) {
@@ -36,24 +38,21 @@ world.events.itemStopCharge.subscribe(eventData => {
 })
 
 async function fire(player, item, scheduleId) {
-	if (!playersThrowing.has(player.id) || playersThrowing.get(player.id) !== scheduleId) {
-		system.clearRunSchedule(playersThrowing.get(player.id));
+	if (playersThrowing.get(player.id) !== scheduleId) {
+		system.clearRunSchedule(scheduleId);
 		return;
 	}
-	
-	let viewVector = player.viewDirection;
-	if(viewVector.y < -0.5){
-		viewVector.y *= 1.75;
-	}
+
+	const viewVector = player.viewDirection;
 	const { x, y, z } = Vector.add(player.headLocation, viewVector);
 	const projectile = player.dimension.spawnEntity(throwables[item].projectile, new Location(x, y, z));
 	projectile.setVelocity(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
 	lastShot.set(`${player.id}${item}`, system.currentTick);
+
 	const ammoObj = throwables[item].ammo;
 	if (!ammoObj) return;
-	ammoObj.consume ??= 1;
 	if (ammoObj.item) {
-		player.runCommandAsync(`clear @s ${item} 0 ${ammoObj.consume}`);
+		await player.runCommandAsync(`clear @s ${ammoObj.item} 0 ${ammoObj.consume}`);
 	} else if (ammoObj.scoreboard) {
 		var ammo;
 		try {
@@ -63,8 +62,9 @@ async function fire(player, item, scheduleId) {
 			ammo = player.scoreboard.getScore(ammoObj.scoreboard.id) - 1;
 		}
 		if (ammo <= 0) {
-				player.getComponent("minecraft:inventory").container.getSlot(player.selectedSlot).setItem(new ItemStack(ItemTypes.get(ammoObj.emptyItem)));
-		}
+			player.getComponent("minecraft:inventory").container.getSlot(player.selectedSlot).setItem(new ItemStack(ItemTypes.get(ammoObj.emptyItem)));
+		} else {
 			player.runCommandAsync(`scoreboard players set @s ${ammoObj.scoreboard.name} ${ammo}`);
+		}
 	}
 }
