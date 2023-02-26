@@ -9,21 +9,22 @@ export var throwables =
 			"consume": 1,
 			"scoreboard": {
 				"name": "blow_gun",
-				"max": 30
-			},
-			"emptyItem": "example:rock"
-		}
+				"max": 30,
+				"emptyItem": "example:rock"
+			}
+		},
+		"singleFire": true
 	},
 	"example:rock": {
 		"fireRate": 1,
 		"projectile": "snowball",
 		"projectileVelo": 3,
-		/*"ammo": {
-			 "scoreboard": {
-				  "name": "rock",
-				  "max": 30
-			 },
-			 "emptyItem": "example:rock"
-		}*/
+		"ammo": {
+			"scoreboard": {
+				"name": "rock",
+				"max": 30,
+				"emptyItem": "example:rock"
+			}
+		}
 	}
 }

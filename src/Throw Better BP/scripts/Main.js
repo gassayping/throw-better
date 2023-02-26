@@ -20,8 +20,12 @@ const lastShot = new Map();
 world.events.itemStartCharge.subscribe((eventData) => {
 	const item = eventData.itemStack.typeId;
 	if (!throwables[item]) return;
-	if (system.currentTick - lastShot.get(`${eventData.source.id}${item}`) < throwables[item].fireRate) return;
 	const player = eventData.source;
+	if (system.currentTick - lastShot.get(`${player.id}${item}`) < throwables[item].fireRate) return;
+	if (throwables[item].singleFire) {
+		fire(player, item);
+		return;
+	}
 	const throwLoop = system.runSchedule(() => {
 		if (!playersThrowing.has(player.id)) {
 			system.clearRunSchedule(throwLoop);
@@ -37,8 +41,8 @@ world.events.itemStopCharge.subscribe(eventData => {
 	playersThrowing.delete(eventData.source.id);
 })
 
-async function fire(player, item, scheduleId) {
-	if (playersThrowing.get(player.id) !== scheduleId) {
+async function fire(player, item, scheduleId = 0) {
+	if (playersThrowing.get(player.id) !== scheduleId && scheduleId) {
 		system.clearRunSchedule(scheduleId);
 		return;
 	}
