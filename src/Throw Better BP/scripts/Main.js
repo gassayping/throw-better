@@ -5,7 +5,6 @@ for (const item in throwables) {
 	if (!throwables.hasOwnProperty(item)) continue;
 	const ammo = throwables[item].ammo;
 	if (!ammo) continue;
-	ammo.consume ??= 1;
 	const scoreboard = ammo.scoreboard;
 	if (!scoreboard) continue;
 	try {
@@ -32,8 +31,8 @@ world.events.itemStartCharge.subscribe((eventData) => {
 			return;
 		}
 		fire(player, item, throwLoop);
-	}, throwables[item].fireRate)
-	playersThrowing[player.id] = throwLoop);
+	}, throwables[item].fireRate);
+	playersThrowing[player.id] = throwLoop;
 	fire(player, item, throwLoop);
 })
 
@@ -51,7 +50,7 @@ async function fire(player, item, scheduleId) {
 		if (ammoObj.item) {
 			const hasItem = await player.runCommandAsync(`testfor @s[hasitem={item=${ammoObj.item}}]`);
 			if(hasItem.successCount != 1) return;
-			player.runCommandAsync(`clear @s ${ammoObj.item} 0 ${ammoObj.consume ?? 1}`);
+			await player.runCommandAsync(`clear @s ${ammoObj.item} 0 ${ammoObj.consume ?? 1}`);
 		}	else if (ammoObj.scoreboard) {
 			var ammo;
 			try {
@@ -71,6 +70,7 @@ async function fire(player, item, scheduleId) {
 
 	const { x, y, z } = Vector.add(player.headLocation, viewVector);
 	const projectile = player.dimension.spawnEntity(throwables[item].projectile, new Location(x, y, z));
+	//projectile.setRotation(player.rotation.y, player.rotation.x);
 	projectile.setVelocity(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
 	lastShot[`${player.id}${item}`] = system.currentTick);
 }
