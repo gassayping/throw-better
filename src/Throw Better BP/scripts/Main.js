@@ -72,5 +72,5 @@ async function fire(player, item, scheduleId) {
 	const projectile = player.dimension.spawnEntity(throwables[item].projectile, new Location(x, y, z));
 	//projectile.setRotation(player.rotation.y, player.rotation.x);
 	projectile.setVelocity(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
-	lastShot[`${player.id}${item}`] = system.currentTick);
+	lastShot[`${player.id}${item}`] = system.currentTick;
 }
