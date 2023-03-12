@@ -5,20 +5,15 @@ export var throwables =
 		"projectile": "arrow",
 		"projectileVelo": 40,
 		"ammo": {
-			//"item": "arrow",
-			"consume": 1,
-			"scoreboard": {
-				"name": "blow_gun",
-				"max": 30,
-				"emptyItem": "example:rock"
-			}
+			"item": "arrow",
+			"consume": 1
 		},
 		"singleFire": true
 	},
 	"example:rock": {
 		"fireRate": 1,
 		"projectile": "snowball",
-		"projectileVelo": 3,
+		"projectileVelo": 1,
 		"ammo": {
 			"scoreboard": {
 				"name": "rock",
