@@ -48,9 +48,9 @@ async function fire(player, item, scheduleId = 0) {
 	const ammoObj = throwables[item].ammo;
 	if (ammoObj) {
 		if (ammoObj.item) {
-			const hasItem = await player.runCommandAsync(`testfor @s[hasitem={item=${ammoObj.item}}]`).successCount == 1;
-			if (!hasItem) return;
-			await player.runCommandAsync(`clear @s ${ammoObj.item} 0 ${ammoObj.consume ?? 1}`);
+			const hasItem = await player.runCommandAsync(`testfor @s[hasitem={item=${ammoObj.item}}]`);
+			if (hasItem.successCount !== 1) return;
+			player.runCommandAsync(`clear @s ${ammoObj.item} 0 ${ammoObj.consume ?? 1}`);
 		} else if (ammoObj.scoreboard) {
 			var ammo;
 			try {
@@ -80,3 +80,7 @@ async function fire(player, item, scheduleId = 0) {
 	projectile.setVelocity(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
 	lastShot[`${player.id}${item}`] = system.currentTick;
 }
+
+world.events.entityHit.subscribe(eventData => {
+	console.warn(eventData.hitEntity.rotation);
+})
