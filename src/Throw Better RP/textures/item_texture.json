@@ -7,6 +7,12 @@
 		},
 		"rock": {
 			"textures": "textures/items/rock"
+		},
+		"snow_gun": {
+			"textures": "textures/items/snow_gun"
+		},
+		"empty_snow_gun": {
+			"textures": "textures/items/empty_snow_gun"
 		}
 	}
 }

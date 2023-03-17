@@ -1,5 +1,6 @@
 import { world, system, Vector, ItemStack, ItemTypes } from '@minecraft/server';
-import { throwables } from "./throwables";
+import { reloadables } from './reloadables';
+import { throwables } from './throwables';
 
 for (const item in throwables) {
 	if (!throwables.hasOwnProperty(item)) continue;
@@ -16,11 +17,29 @@ for (const item in throwables) {
 const playersThrowing = {};
 const lastShot = {};
 
-world.events.itemStartCharge.subscribe((eventData) => {
+world.events.itemStartCharge.subscribe(async (eventData) => {
 	const item = eventData.itemStack.typeId;
-	if (!throwables[item]) return;
-	if (system.currentTick - lastShot?.[`${eventData.source.id}${item}`] < throwables[item].fireRate) return;
+	if (!throwables[item] && !reloadables[item]) return;
+	if (system.currentTick - lastShot?.[`${eventData.source.id}${item}`] < throwables[item]?.fireRate) return;
 	const player = eventData.source;
+	if (reloadables[item]) {
+		const reloadItem = reloadables[item];
+		const reloadAmmo = reloadItem.ammo;
+		const hasItem = await player.runCommandAsync(`testfor @s[hasitem={item=${reloadAmmo.item},quantity=${reloadAmmo.amount}..}]`)
+		if (hasItem.successCount !== 1) return;
+		player.runCommandAsync(`clear @s ${reloadAmmo.item} 0 ${reloadAmmo.amount}`);
+		const inv = player.getComponent('minecraft:inventory').container;
+		const slot = inv.getSlot(player.selectedSlot);
+		system.runTimeout(() => {
+			if (slot.typeId) {
+				slot.setItem(new ItemStack(reloadItem.reloadedItem));
+			} else {
+				player.runCommandAsync(`give @s ${reloadItem.reloadedItem}`)
+			}
+		}, reloadItem.reloadTime);
+		reload(player);
+		return;
+	}
 	if (throwables[item].singleFire) {
 		fire(player, item);
 		return;
@@ -60,7 +79,7 @@ async function fire(player, item, scheduleId = 0) {
 				ammo = player.scoreboard.getScore(ammoObj.scoreboard.id);
 			}
 			if (ammo <= 0) {
-				player.getComponent("minecraft:inventory").container.getSlot(player.selectedSlot).setItem(new ItemStack(ItemTypes.get(ammoObj.emptyItem)));
+				player.getComponent('minecraft:inventory').container.getSlot(player.selectedSlot).setItem(new ItemStack(ItemTypes.get(ammoObj.emptyItem)));
 			} else {
 				player.runCommandAsync(`scoreboard players set @s ${ammoObj.scoreboard.name} ${ammo - 1}`);
 				player.scoreboard.setScore(ammoObj.scoreboard.id, ammo);
@@ -76,8 +95,12 @@ async function fire(player, item, scheduleId = 0) {
 		viewVector.z *= 2.1;
 	}
 	const { x, y, z } = Vector.add(player.getHeadLocation(), viewVector);
-	const projectile = player.dimension.spawnEntity(throwables[item].projectile, { "x": x, "y": y, "z": z });
+	const projectile = player.dimension.spawnEntity(throwables[item].projectile, { 'x': x, 'y': y, 'z': z });
 	projectile.setRotation(-playerRotation.x, -playerRotation.y);
 	projectile.applyImpulse(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
 	lastShot[`${player.id}${item}`] = system.currentTick;
+}
+
+async function reload(player) {
+
 }

@@ -21,5 +21,17 @@ export var throwables =
 				"emptyItem": "example:rock"
 			}
 		}
+	},
+	"example:snow_gun": {
+		"fireRate": 1,
+		"projectile": "snowball",
+		"projectileVelo": 3,
+		"ammo": {
+			"scoreboard": {
+				"name": "snow_gun",
+				"max": 16,
+				"emptyItem": "example:empty_snow_gun"
+			}
+		}
 	}
 }
