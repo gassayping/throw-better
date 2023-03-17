@@ -1,5 +1,5 @@
-import { world, system, Vector, Location, ItemStack, ItemTypes } from '@minecraft/server';
-import { throwables } from "throwables.js";
+import { world, system, Vector, ItemStack, ItemTypes } from '@minecraft/server';
+import { throwables } from "./throwables";
 
 for (const item in throwables) {
 	if (!throwables.hasOwnProperty(item)) continue;
@@ -25,9 +25,9 @@ world.events.itemStartCharge.subscribe((eventData) => {
 		fire(player, item);
 		return;
 	}
-	const throwLoop = system.runSchedule(() => {
+	const throwLoop = system.runInterval(() => {
 		if (!playersThrowing[player.id]) {
-			system.clearRunSchedule(throwLoop);
+			system.clearRun(throwLoop);
 			return;
 		}
 		fire(player, item, throwLoop);
@@ -42,7 +42,7 @@ world.events.itemStopCharge.subscribe(eventData => {
 
 async function fire(player, item, scheduleId = 0) {
 	if (playersThrowing[player.id] !== scheduleId && scheduleId) {
-		system.clearRunSchedule(scheduleId);
+		system.clearRun(scheduleId);
 		return;
 	}
 	const ammoObj = throwables[item].ammo;
@@ -68,19 +68,16 @@ async function fire(player, item, scheduleId = 0) {
 			}
 		}
 	}
-	let viewVector = player.viewDirection;
-	if (player.rotation.x > 50) {
+	let viewVector = player.getViewDirection();
+	const playerRotation = player.getRotation()
+	if (playerRotation.x > 30) {
 		viewVector.x *= 2.1;
 		viewVector.y *= 2.1;
 		viewVector.z *= 2.1;
 	}
-	const { x, y, z } = Vector.add(player.headLocation, viewVector);
-	const projectile = player.dimension.spawnEntity(throwables[item].projectile, new Location(x, y, z));
-	projectile.setRotation(-player.rotation.x, -player.rotation.y);
-	projectile.setVelocity(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
+	const { x, y, z } = Vector.add(player.getHeadLocation(), viewVector);
+	const projectile = player.dimension.spawnEntity(throwables[item].projectile, { "x": x, "y": y, "z": z });
+	projectile.setRotation(-playerRotation.x, -playerRotation.y);
+	projectile.applyImpulse(new Vector(viewVector.x * throwables[item].projectileVelo, viewVector.y * throwables[item].projectileVelo, viewVector.z * throwables[item].projectileVelo));
 	lastShot[`${player.id}${item}`] = system.currentTick;
 }
-
-world.events.entityHit.subscribe(eventData => {
-	console.warn(eventData.hitEntity.rotation);
-})
