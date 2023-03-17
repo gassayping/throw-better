@@ -6,6 +6,10 @@ export var reloadables =
 		"ammo": {
 			"item": "minecraft:snowball",
 			"amount": 16
+		},
+		"scoreboard": {
+			"name": "snow_gun",
+			"max": 16
 		}
 	}
 }

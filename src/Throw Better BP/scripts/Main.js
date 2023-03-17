@@ -23,21 +23,7 @@ world.events.itemStartCharge.subscribe(async (eventData) => {
 	if (system.currentTick - lastShot?.[`${eventData.source.id}${item}`] < throwables[item]?.fireRate) return;
 	const player = eventData.source;
 	if (reloadables[item]) {
-		const reloadItem = reloadables[item];
-		const reloadAmmo = reloadItem.ammo;
-		const hasItem = await player.runCommandAsync(`testfor @s[hasitem={item=${reloadAmmo.item},quantity=${reloadAmmo.amount}..}]`)
-		if (hasItem.successCount !== 1) return;
-		player.runCommandAsync(`clear @s ${reloadAmmo.item} 0 ${reloadAmmo.amount}`);
-		const inv = player.getComponent('minecraft:inventory').container;
-		const slot = inv.getSlot(player.selectedSlot);
-		system.runTimeout(() => {
-			if (slot.typeId) {
-				slot.setItem(new ItemStack(reloadItem.reloadedItem));
-			} else {
-				player.runCommandAsync(`give @s ${reloadItem.reloadedItem}`)
-			}
-		}, reloadItem.reloadTime);
-		reload(player);
+		reload(player, item);
 		return;
 	}
 	if (throwables[item].singleFire) {
@@ -53,11 +39,11 @@ world.events.itemStartCharge.subscribe(async (eventData) => {
 	}, throwables[item].fireRate);
 	playersThrowing[player.id] = throwLoop;
 	fire(player, item, throwLoop);
-})
+});
 
 world.events.itemStopCharge.subscribe(eventData => {
 	delete playersThrowing[eventData.source.id];
-})
+});
 
 async function fire(player, item, scheduleId = 0) {
 	if (playersThrowing[player.id] !== scheduleId && scheduleId) {
@@ -78,17 +64,15 @@ async function fire(player, item, scheduleId = 0) {
 				await player.runCommandAsync(`scoreboard players add @s ${ammoObj.scoreboard.name} ${ammoObj.scoreboard.max}`);
 				ammo = player.scoreboard.getScore(ammoObj.scoreboard.id);
 			}
-			if (ammo <= 0) {
-				player.getComponent('minecraft:inventory').container.getSlot(player.selectedSlot).setItem(new ItemStack(ItemTypes.get(ammoObj.emptyItem)));
+			if (ammo == 0) {
+				player.getComponent('minecraft:inventory').container.getSlot(player.selectedSlot).setItem(new ItemStack(ammoObj.scoreboard.emptyItem));
 			} else {
-				player.runCommandAsync(`scoreboard players set @s ${ammoObj.scoreboard.name} ${ammo - 1}`);
 				player.scoreboard.setScore(ammoObj.scoreboard.id, ammo);
-
 			}
 		}
 	}
 	let viewVector = player.getViewDirection();
-	const playerRotation = player.getRotation()
+	const playerRotation = player.getRotation();
 	if (playerRotation.x > 30) {
 		viewVector.x *= 2.1;
 		viewVector.y *= 2.1;
@@ -101,6 +85,26 @@ async function fire(player, item, scheduleId = 0) {
 	lastShot[`${player.id}${item}`] = system.currentTick;
 }
 
-async function reload(player) {
-
+async function reload(player, item) {
+	const reloadItem = reloadables[item];
+	const reloadAmmo = reloadItem.ammo;
+	const hasItem = await player.runCommandAsync(`testfor @s[hasitem={item=${reloadAmmo.item},quantity=${reloadAmmo.amount}..}]`);
+	if (hasItem.successCount !== 1) return;
+	player.runCommandAsync(`clear @s ${reloadAmmo.item} 0 ${reloadAmmo.amount}`);
+	const inv = player.getComponent('minecraft:inventory').container;
+	const slot = inv.getSlot(player.selectedSlot);
+	slot.setItem();
+	system.runTimeout(() => {
+		if (slot.typeId) {
+			player.runCommandAsync(`give @s ${reloadItem.reloadedItem}`);
+		} else {
+			slot.setItem(new ItemStack(reloadItem.reloadedItem));
+		}
+		if (!reloadItem.scoreboard) return;
+		try {
+			player.scoreboard.getScore(reloadItem.scoreboard.id);
+		} catch {
+			player.runCommandAsync(`scoreboard players add @s ${reloadItem.scoreboard.name} ${reloadItem.scoreboard.max}`);
+		}
+	}, reloadItem.reloadTime);
 }
