@@ -4,15 +4,19 @@ A Minecraft Bedrock script for throwable items WITHOUT using player.json! With a
 
 ## Features:
 
+- No player.json
 - Easy to add items
-
-Customizable options:
-
-- Fire rate
-- Projectile speed
-- Ammo
-	- Scoreboard or item
-	- Consume amount
+- Reloadable items
+ - Customizable options:
+	- Fire rate
+	- Projectile speed
+	- Ammo
+		- Scoreboard or item
+		- Consume amount
+- Single fire option
+- Reloading
+	- Reload time
+	- Ammo
 
 ## Usage
 
@@ -23,6 +27,8 @@ This requires pre-existing item that can be used in your BP
 4. Optionally define the `ammo` object
 
 ## Documentation
+
+### Throwables.js
 
 <table>
 <thead>
@@ -75,8 +81,67 @@ This requires pre-existing item that can be used in your BP
     <td>consume</td>
     <td>The amount of items to consume from the player’s inventory <em>Required</em>, but will default to one if undefined</td>
   </tr>
+  </tr>
+    <tr>
+    <td>singleFire</td>
+    <td>Whether the item will fire once per button press or not. <em>Optional</em> - Defaults to false</td>
+  </tr>
 </tbody>
 </table> </td>
 </tr>
+</tbody>
+</table>
+
+### Reloadables.js
+
+<table>
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>reloadTime</td>
+    <td>Time in ticks before player gets the reloaded item back. <em>Required</em></td>
+  </tr>
+  <tr>
+    <td>reloadedItem</td>
+    <td>Item that will be given to the player when they reload. <em>Required</em></td>
+  </tr>
+  <tr>
+    <td>ammo</td>
+    <td>Object defining the item’s ammo requirements. <em>Required</em><table>
+<thead>
+  <tr>
+    <td>item</td>
+    <td>Item that will be consumed by reloading. <em>Required</em></td>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>amount</td>
+    <td>Amount of the item required for reloading. <em>Required</em></td>
+  </tr>
+</tbody>
+</table></td>
+  </tr>
+  <tr>
+    <td>scoreboard</td>
+    <td>Object defining the scoreboard for the item. <em>Optional</em>
+  <table>
+  <tr>
+    <td>name</td>
+    <td>Name of the scoreboard to add ammo to. Should be the same as the scoreboard of the throwable. <em>Required</em>, but will default to the scoreboard of the reloadedItem’s scoreboard in throwables.</td>
+  </tr>
+<tbody>
+  <tr>
+    <td>max</td>
+    <td>Number of ammo to add to the scoreboard when reloading. <em>Required</em></td>
+  </tr>
+</tbody>
+</table></td>
+  </tr>
 </tbody>
 </table>
