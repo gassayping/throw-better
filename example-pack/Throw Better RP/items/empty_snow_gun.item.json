@@ -2,12 +2,13 @@
 	"format_version": "1.10",
 	"minecraft:item": {
 		"description": {
-			"identifier": "example:rock",
-			"category": "Nature"
+			"identifier": "example:empty_snow_gun",
+			"category": "Equipment"
 		},
 		"components": {
-			"minecraft:icon": "rock",
+			"minecraft:icon": "empty_snow_gun",
 			"minecraft:use_animation": "bow",
+			"minecraft:hover_text_color": "aqua",
 			"minecraft:render_offsets": "apple"
 		}
 	}

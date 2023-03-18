@@ -1,10 +1,10 @@
-import { world, system, Vector, ItemStack, ItemTypes } from '@minecraft/server';
+import { world, system, Vector, ItemStack } from '@minecraft/server';
 import { reloadables } from './reloadables';
 import { throwables } from './throwables';
 
-for (const item in throwables) {
-	if (!throwables.hasOwnProperty(item)) continue;
-	const ammo = throwables[item].ammo;
+for (const throwItem in throwables) {
+	if (!throwables.hasOwnProperty(throwItem)) continue;
+	const ammo = throwables[throwItem].ammo;
 	if (!ammo) continue;
 	const scoreboard = ammo.scoreboard;
 	if (!scoreboard) continue;
@@ -13,11 +13,19 @@ for (const item in throwables) {
 	} catch { }
 	scoreboard.id = world.scoreboard.getObjective(scoreboard.name);
 }
+for (const reloadItem in reloadables) {
+	if (!reloadables.hasOwnProperty(reloadItem)) continue;
+	const scoreboard = reloadables[reloadItem].scoreboard;
+	const throwObj = throwables[reloadables[reloadItem].reloadedItem];
+	if (!scoreboard || !throwObj?.ammo.scoreboard) continue;
+	scoreboard.id = throwObj.ammo.scoreboard.id;
+	scoreboard.max ??= throwObj.ammo.scoreboard.max;
+}
 
 const playersThrowing = {};
 const lastShot = {};
 
-world.events.itemStartCharge.subscribe(async (eventData) => {
+world.events.itemStartCharge.subscribe((eventData) => {
 	const item = eventData.itemStack.typeId;
 	if (!throwables[item] && !reloadables[item]) return;
 	if (system.currentTick - lastShot?.[`${eventData.source.id}${item}`] < throwables[item]?.fireRate) return;
@@ -67,7 +75,7 @@ async function fire(player, item, scheduleId = 0) {
 			if (ammo == 0) {
 				player.getComponent('minecraft:inventory').container.getSlot(player.selectedSlot).setItem(new ItemStack(ammoObj.scoreboard.emptyItem));
 			} else {
-				player.scoreboard.setScore(ammoObj.scoreboard.id, ammo);
+				player.scoreboard.setScore(ammoObj.scoreboard.id, ammo - 1);
 			}
 		}
 	}
@@ -102,9 +110,9 @@ async function reload(player, item) {
 		}
 		if (!reloadItem.scoreboard) return;
 		try {
-			player.scoreboard.getScore(reloadItem.scoreboard.id);
+			player.scoreboard.setScore(reloadItem.scoreboard.id, reloadItem.scoreboard.max);
 		} catch {
-			player.runCommandAsync(`scoreboard players add @s ${reloadItem.scoreboard.name} ${reloadItem.scoreboard.max}`);
+			player.runCommandAsync(`scoreboard players set @s ${reloadItem.scoreboard.name} ${reloadItem.scoreboard.max}`);
 		}
 	}, reloadItem.reloadTime);
 }

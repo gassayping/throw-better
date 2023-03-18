@@ -2,11 +2,11 @@
 	"format_version": "1.10",
 	"minecraft:item": {
 		"description": {
-			"identifier": "example:blow_gun",
-			"category": "Nature"
+			"identifier": "example:snow_gun",
+			"category": "Equipment"
 		},
 		"components": {
-			"minecraft:icon": "blow_gun",
+			"minecraft:icon": "snow_gun",
 			"minecraft:use_animation": "bow",
 			"minecraft:hover_text_color": "aqua",
 			"minecraft:render_offsets": "apple"

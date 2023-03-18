@@ -15,15 +15,13 @@ export var throwables =
 		"projectile": "snowball",
 		"projectileVelo": 1,
 		"ammo": {
-			"scoreboard": {
-				"name": "rock",
-				"max": 30,
-				"emptyItem": "example:rock"
-			}
-		}
+			"item": "example:rock",
+			"consume": 1
+		},
+		"singleFire": true
 	},
 	"example:snow_gun": {
-		"fireRate": 1,
+		"fireRate": 3,
 		"projectile": "snowball",
 		"projectileVelo": 3,
 		"ammo": {

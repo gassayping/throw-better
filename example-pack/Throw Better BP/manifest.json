@@ -4,11 +4,11 @@
 		"authors": [
 			"Gassayping"
 		],
-		"url": "github.com/gassayping/throw-better"
+		"url": "https://github.com/gassayping/throw-better"
 	},
 	"header": {
 		"name": "Throw Better",
-		"description": "A script pack to create custom throwable items WITHOUT using player.json!",
+		"description": "Example pack for the Throw Better project, a script to create custom throwable items WITHOUT using player.json!",
 		"min_engine_version": [
 			1,
 			19,
