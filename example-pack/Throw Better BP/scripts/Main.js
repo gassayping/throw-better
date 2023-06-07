@@ -111,7 +111,7 @@ async function startReload(player, item) {
 		//@ts-ignore
 		const inv = player.getComponent('minecraft:inventory').container;
 		const slot = inv.getSlot(player.selectedSlot);
-		lastShot[`${player.id}${reloadItem.reloadedItem}`] = system.currentTick;
+		lastShot[`${player.id}${reloadItem.reloadedItem}`] = system.currentTick + 1;
 		slot.setItem(new ItemStack(reloadItem.reloadedItem));
 		if (!reloadItem.scoreboard)
 			return;
