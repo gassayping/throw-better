@@ -1,4 +1,4 @@
-export var throwables =
+export const throwables =
 {
 
 }
